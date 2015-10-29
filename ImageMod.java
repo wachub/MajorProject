@@ -4,7 +4,7 @@ import javax.swing.*;
 import javax.*;
 import javax.imageio.ImageIO;
 import java.io.*;
-
+import java.util.*;
 
 public class ImageMod
 {
@@ -24,8 +24,7 @@ public class ImageMod
 	int conn[][];
 	
 	
-	// Code in void did not execute..
-		
+	// Code in void did not execute..		
 	ImageMod()throws IOException
 	{
 	
@@ -39,6 +38,9 @@ public class ImageMod
 		
 		h=image1.getHeight();
 		w=image1.getWidth();
+		
+		System.out.println("The height and width are "+h+" and "+w);
+		
 		/*
 		if(input.exists())
 		{
@@ -76,7 +78,7 @@ public class ImageMod
 		pixels=new int[h][w];
 		conn = new int[h][w];
 		
-		FastRGB frgb=new FastRGB(image1);
+		//FastRGB frgb=new FastRGB(image1);
 		int i=1;
 		int j=1;
 		
@@ -89,7 +91,7 @@ public class ImageMod
 				for(j=0;j<w;j++)
 				{
 					
-					pixels[i][j]=frgb.getRGB(j,i);
+					pixels[i][j]=image1.getRGB(j,i);
 					//System.out.println(pixels[i][j]);
 					if(pixels[i][j]==-1)
 					{
@@ -104,18 +106,14 @@ public class ImageMod
 				}
 			}
 			
-			for(i=0;i<h;i++)
-			{
-				for(j=0;j<w;j++)
-				{
-					
-					
-					//System.out.print(imagefin.getRGB(j,i));
-					System.out.print(conn[i][j]);
-					
-				}
-				System.out.println();
-			}
+			//Flooding just the outer white region..
+			//flood(2,2,2);
+			
+			
+			
+			
+			
+
 			
 			/*for(i=0;i<h;i++)
 			{
@@ -146,23 +144,118 @@ public class ImageMod
 		//System.out.println(frgb.getRGB(4,4));
 	}
 	
-	public void floodfill()
+	
+	void floodfill() throws IOException
 	{
-		int floodfillconn[h][j];
-		for(i=0;i<h;i++)
-		{
-			for(j=0;j<w;j++)
-			{
-				
-					
+	
 		
+		
+		int col=2;
+		
+		for(int i=0;i<h;i++)
+		{
+			for(int j=0;j<w;j++)
+			{
+				if(conn[i][j]==1)
+				flood(i,j,col++);
+			}
+		}
+		
+		for(int i=0;i<h;i++)
+		{
+			for(int j=0;j<w;j++)
+			{				
+				//System.out.print(imagefin.getRGB(j,i));
+				System.out.print(conn[i][j]);
+					
+			}
+			System.out.println();
+		}
+	}
+	
+	void flood(int x,int y,int no_of_colour) throws IOException
+	{		
+	
+		BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+		
+		//String s=br.readLine();
+	
+		conn[x][y]=no_of_colour;
+		
+  		Deque<Integer> xq = new LinkedList<Integer>();
+  		Deque<Integer> yq = new LinkedList<Integer>();
+  		
+  		xq.addFirst(x);
+  		yq.addFirst(y);
+  		
+		while (  xq.peekFirst()!=null )
+		{
+		
+			//s=br.readLine();
+		
+			//System.out.println(xq.size());
+		
+      			int x1 = xq.removeLast();
+       			int y1 = yq.removeLast();
+		
+			if(x1+1<h)
+			{
+       				if(conn[x1+1][y1]==1)
+            			{
+            				//System.out.println((x1+1)+" "+y1);
+            				xq.addFirst(x1+1);
+            				yq.addFirst(y1);
+            				conn[x1+1][y1]=no_of_colour;
+            				//System.out.println("Here1");
+            			}
+            		}
+            	
+			if(x1-1>=0)
+			{            	
+       				if(conn[x1-1][y1]==1)
+            			{
+            				//System.out.println((x1-1)+" "+y1);
+            				xq.addFirst(x1-1);
+            				yq.addFirst(y1);
+            				conn[x1-1][y1]=no_of_colour;
+            				//System.out.println("Here2");
+            			}
+            		}
+            		
+            		if(y1+1<w)
+            		{
+            			
+       				if(conn[x1][y1+1]==1)
+            			{
+            				//System.out.println(x1+" "+(y1+1));
+            				xq.addFirst(x1);
+            				yq.addFirst(y1+1);
+            				conn[x1][y1+1]=no_of_colour;
+            				//System.out.println("Here3");
+            			}
+            		}
+            		
+            		if(y1-1>=0)
+            		{
+       				if (conn[x1][y1-1]==1)
+            			{
+            				//System.out.println(x1+" "+(y1-1));
+            				xq.addFirst(x1);
+            				yq.addFirst(y1-1);
+            				conn[x1][y1-1]=no_of_colour;
+            				//System.out.println("Here4");
+            			}
+			}
+		}				
 	}
 	
 	public static void main(String [] args) throws IOException
 	{	
-		
 		ImageMod m=new ImageMod();		
-		m.regions();			
+		m.regions();
+		m.floodfill();
+		
+		
 	}
 	
 }
