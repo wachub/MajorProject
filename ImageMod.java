@@ -11,7 +11,7 @@ public class ImageMod
 
 	BufferedImage image1;
 	
-	BufferedImage imagefin;
+	BufferedImage imageFin;
 	
 	File input;
 	
@@ -29,12 +29,12 @@ public class ImageMod
 	{
 	
 		//input=new File("c.png");
-		input=new File("img.png");
+		input=new File("./SpinalCordImages/C7.jpg");
 		
 		image1=ImageIO.read(input);	
-		imagefin=ImageIO.read(input);
+		imageFin=ImageIO.read(input);
 		
-		System.out.println(imagefin.getRGB(2,2));
+		System.out.println(imageFin.getRGB(2,2));
 		
 		h=image1.getHeight();
 		w=image1.getWidth();
@@ -145,7 +145,7 @@ public class ImageMod
 	}
 	
 	
-	void floodfill() throws IOException
+	private void floodfill() throws IOException
 	{
 	
 		
@@ -161,19 +161,10 @@ public class ImageMod
 			}
 		}
 		
-		for(int i=0;i<h;i++)
-		{
-			for(int j=0;j<w;j++)
-			{				
-				//System.out.print(imagefin.getRGB(j,i));
-				System.out.print(conn[i][j]);
-					
-			}
-			System.out.println();
-		}
+
 	}
 	
-	void flood(int x,int y,int no_of_colour) throws IOException
+	private void flood(int x,int y,int no_of_colour) throws IOException
 	{		
 	
 		BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
@@ -246,16 +237,47 @@ public class ImageMod
             				//System.out.println("Here4");
             			}
 			}
-		}				
+		}
+		//display();				
 	}
+	
+	private void display()
+	{
+		for(int i=0;i<h;i++)
+		{
+			for(int j=0;j<w;j++)
+			{
+				System.out.print(conn[i][j]);
+			}
+			System.out.println();
+		}
+	}
+	
+	private void colourRegions() throws IOException
+	{
+		for (int i = 0; i < h; i++)
+    		{    			
+    			
+        		for (int j = 0; j < w; j++)
+        		 {
+        		 	int val=conn[i][j];
+        		 	Color myWhite = new Color(val%230, val%230, val%230); // Color white
+				int rgb = myWhite.getRGB();
+            			imageFin.setRGB(j, i, rgb);
+       			}
+       		}
+        	// retrieve image
+		File outputfile = new File("saved.png");
+    		ImageIO.write(imageFin, "png", outputfile);	
+	}
+	
 	
 	public static void main(String [] args) throws IOException
 	{	
 		ImageMod m=new ImageMod();		
 		m.regions();
 		m.floodfill();
-		
-		
+		m.colourRegions();		
 	}
 	
 }
