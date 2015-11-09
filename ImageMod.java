@@ -13,7 +13,15 @@ public class ImageMod
 	
 	BufferedImage imageFin;
 	
-	File input;
+
+	//Stores the regions independently
+	BufferedImage regionStore[];
+	
+	//The number of inputs
+	
+	
+	
+	//File input;
 	
 	int w;
 	int h;
@@ -28,8 +36,8 @@ public class ImageMod
 	ImageMod()throws IOException
 	{
 	
-		//input=new File("c.png");
-		input=new File("./SpinalCordImages/C7.jpg");
+		input=new File("img.png");
+		//input=new File("./SpinalCordImages/C7.jpg");
 		
 		image1=ImageIO.read(input);	
 		imageFin=ImageIO.read(input);
@@ -91,7 +99,7 @@ public class ImageMod
 				for(j=0;j<w;j++)
 				{
 					
-					pixels[i][j]=image1.getRGB(j,i);
+					pixels[i][j]=imageFin.getRGB(j,i);
 					//System.out.println(pixels[i][j]);
 					if(pixels[i][j]==-1)
 					{
@@ -238,7 +246,8 @@ public class ImageMod
             			}
 			}
 		}
-		//display();				
+		//display();
+						
 	}
 	
 	private void display()
@@ -260,24 +269,89 @@ public class ImageMod
     			
         		for (int j = 0; j < w; j++)
         		 {
+        		 	//int val=Math.abs(imageFin.getRGB(j,i)%222);
+        		 	
         		 	int val=conn[i][j];
-        		 	Color myWhite = new Color(val%230, val%230, val%230); // Color white
-				int rgb = myWhite.getRGB();
-            			imageFin.setRGB(j, i, rgb);
+        		 	
+
+        		 	try
+        		 	{
+        		 		Color myWhite = new Color(val,val,val); // Color white
+        		 	
+        		 	
+					int rgb = myWhite.getRGB();
+            				imageFin.setRGB(j, i, rgb);
+            			}
+            			catch(IllegalArgumentException e)
+        		 	{
+        		 		System.out.println(" Bue value is " +(val-100)%230);
+        		 	}
        			}
        		}
         	// retrieve image
+	}
+	
+	private void removeLightColours()throws IOException
+	{
+		for(int i=0;i<h;i++)
+		{
+			for(int j=0;j<w;j++)
+			{
+				
+				//Small thing to be taken care of...
+				
+				int pixel=image1.getRGB(j,i);	
+				int alpha = (pixel >> 24) & 0xff;
+ 				int red = (pixel >> 16) & 0xff;
+ 				int green = (pixel >> 8) & 0xff;
+				int blue = (pixel) & 0xff;
+				
+				if(red>200&&green>200&&blue>200)
+				{
+					Color myWhite = new Color(255, 255, 255); // Color white
+					int rgb = myWhite.getRGB();
+            				imageFin.setRGB(j, i, rgb);
+				}
+				
+				if(Math.abs(red-green)<40&&Math.abs(green-blue)<40&&Math.abs(red-blue)<40)
+				{
+					Color myWhite = new Color(255, 255, 255); // Color white
+					int rgb = myWhite.getRGB();
+            				imageFin.setRGB(j, i, rgb);
+				}
+				
+				
+			}
+		}
+		
+		//File outputfile = new File("saved.png");
+    		//ImageIO.write(imageFin, "png", outputfile);
+    			
+	}
+	
+	private void putToFile()throws IOException
+	{
 		File outputfile = new File("saved.png");
     		ImageIO.write(imageFin, "png", outputfile);	
 	}
 	
 	
+	
+				
+	
+	
 	public static void main(String [] args) throws IOException
 	{	
+	
 		ImageMod m=new ImageMod();		
+		m.removeLightColours();
+		
 		m.regions();
 		m.floodfill();
-		m.colourRegions();		
+		
+		m.colourRegions();	
+		m.putToFile();
+			
 	}
 	
 }
